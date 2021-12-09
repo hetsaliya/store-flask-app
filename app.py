@@ -13,7 +13,11 @@ app = Flask(__name__)
 
 app.config['DEBUG'] = True
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(('DATABASE_URL?sslmode=require').replace('postgres://', 'postgresql://'), 'sqlite:///data.db')
+uri = os.getenv("DATABASE_URL")  # or other relevant config var
+if uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL').replace('postgres://', 'postgresql://') if os.environ.get('DATABASE_URL') else 'sqlite:///data.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'jose'
 api = Api(app)
